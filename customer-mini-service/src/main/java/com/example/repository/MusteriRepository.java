@@ -9,5 +9,6 @@ public interface MusteriRepository extends JpaRepository<Musteri, String> {
 
     Musteri findByTckn(String tckn);
     Musteri findByEmail(String email);
+    Musteri findByMusteriId(int musteriId);
 
 }

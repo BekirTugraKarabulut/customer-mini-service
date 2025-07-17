@@ -17,4 +17,6 @@ public interface MusteriService {
 
     public void deleteMusteri(String tckn);
 
+    public DtoMusteri getMusteriById(int musteriId);
+
 }

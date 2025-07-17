@@ -3,9 +3,9 @@ package com.example.service.impl;
 import com.example.dto.DtoMusteri;
 import com.example.dto.DtoMusteriUI;
 import com.example.entity.Musteri;
-import com.example.execption.BaseException;
-import com.example.execption.ErrorMessage;
-import com.example.execption.MessageType;
+import com.example.exception.BaseException;
+import com.example.exception.ErrorMessage;
+import com.example.exception.MessageType;
 import com.example.repository.MusteriRepository;
 import com.example.service.MusteriService;
 import org.springframework.beans.BeanUtils;
@@ -51,13 +51,55 @@ public class MusteriServiceImpl implements MusteriService {
         return dtoMusteri;
     }
 
+
+    private String tcknDogrulama(String tckn) {
+
+        String dogrulanacakTckn = tckn;
+
+        if(dogrulanacakTckn.length() != 11){
+            throw new BaseException(new ErrorMessage(MessageType.HATALİ_KARAKTER_SAYİSİ , dogrulanacakTckn));
+        }
+
+        if(Character.getNumericValue(dogrulanacakTckn.charAt(0)) == 0){
+            throw new BaseException(new ErrorMessage(MessageType.İLK_BASAMAK_HATASI , dogrulanacakTckn));
+        }
+
+        if(musteriRepository.findByTckn(dogrulanacakTckn) != null){
+            throw new BaseException(new ErrorMessage(MessageType.KULLANILMIS_TCKN , dogrulanacakTckn));
+        }
+
+        Integer[] tcknDogrulama = new Integer[11];
+
+        for (int i = 0 ; i < 11 ; i++){
+            tcknDogrulama[i] = Character.getNumericValue(dogrulanacakTckn.charAt(i));
+        }
+
+        Integer tekBasamaklarinToplami = tcknDogrulama[0] + tcknDogrulama[2] + tcknDogrulama[4] + tcknDogrulama[6]  + tcknDogrulama[8];
+        Integer ciftBasamaklariToplami = tcknDogrulama[1] + tcknDogrulama[3] + tcknDogrulama[5] + tcknDogrulama[7];
+        Integer tekIndeksToplamCarpimi = tekBasamaklarinToplami * 7;
+        Integer eldeEdilenSonuc = tekIndeksToplamCarpimi - ciftBasamaklariToplami;
+
+        if(eldeEdilenSonuc % 10 != Character.getNumericValue(dogrulanacakTckn.charAt(9))){
+            throw new BaseException(new ErrorMessage(MessageType.TCKN_BASARISIZ ,  dogrulanacakTckn));
+        }
+
+        Integer ilk9Basamak = tekBasamaklarinToplami + ciftBasamaklariToplami;
+        Integer ilk10Basamak = ilk9Basamak + tcknDogrulama[9];
+
+        if(ilk10Basamak  % 10 != Character.getNumericValue(dogrulanacakTckn.charAt(10))){
+            throw new BaseException(new ErrorMessage(MessageType.TCKN_BASARISIZ ,  dogrulanacakTckn));
+        }
+
+        return dogrulanacakTckn;
+    }
+
     @Override
     public DtoMusteri saveMusteri(DtoMusteriUI dtoMusteriUI) {
 
            Musteri musteri = new Musteri();
            DtoMusteri dtoMusteri = new DtoMusteri();
 
-           musteri.setTckn(dtoMusteriUI.getTckn());
+           musteri.setTckn(tcknDogrulama(dtoMusteriUI.getTckn()));
            musteri.setMusteriAd(dtoMusteriUI.getMusteriAd());
            musteri.setMusteriSoyad(dtoMusteriUI.getMusteriSoyad());
            musteri.setEmail(dtoMusteriUI.getEmail());
@@ -117,6 +159,21 @@ public class MusteriServiceImpl implements MusteriService {
             musteriRepository.delete(musteri);
         }
 
+    }
+
+    @Override
+    public DtoMusteri getMusteriById(int musteriId) {
+
+        Musteri musteri = musteriRepository.findByMusteriId(musteriId);
+
+        if(musteri == null){
+            return null;
+        }
+
+        DtoMusteri dtoMusteri = new DtoMusteri();
+        BeanUtils.copyProperties(musteri, dtoMusteri);
+
+        return dtoMusteri;
     }
 
 }

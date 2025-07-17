@@ -4,6 +4,7 @@ import com.example.controller.MusteriController;
 import com.example.dto.DtoMusteri;
 import com.example.dto.DtoMusteriUI;
 import com.example.service.MusteriService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/rest/api")
+@Tag(name = "Musteri Controller" , description = "Müşteri Yönetim APİ'leri")
 public class MusteriControllerImpl implements MusteriController {
 
     @Autowired
@@ -46,5 +48,10 @@ public class MusteriControllerImpl implements MusteriController {
         musteriService.deleteMusteri(tckn);
     }
 
+    @Override
+    @GetMapping(path = "/musteri/id/{musteriId}")
+    public DtoMusteri getMusteriById(@PathVariable(name = "musteriId" , required = true) int musteriId) {
+        return musteriService.getMusteriById(musteriId);
+    }
 
 }
