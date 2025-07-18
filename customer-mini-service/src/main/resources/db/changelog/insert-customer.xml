@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="insert-customer" author="tugra">
+        <insert tableName="musteri">
+            <column name="tckn" value="44104444230"></column>
+            <column name="anne_adi" value="Zuhal"></column>
+            <column name="baba_adi" value="Mahmut"></column>
+            <column name="e-mail" value="efe@gmail.com"></column>
+            <column name="musteri_ad" value="Efe"></column>
+            <column name="musteri_soyad" value="Karabulut"></column>
+            <column name="adres" value="Ataşehir/İstanbul"></column>
+            <column name="parola" value="123456"></column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
